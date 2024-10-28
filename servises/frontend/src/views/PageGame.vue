@@ -36,12 +36,10 @@ const cardsConfig = [
     imgUrl: "",
   },
   [
-    { text: "", imgUrl: "" },
-    { text: "", imgUrl: "" },
+    { text: "Кошка", imgUrl: "" },
+    { text: "Cat", imgUrl: "" },
   ],
 ] as CardsConfig;
-
-console.log(cardsConfig);
 
 class MemoryGame {
   selectedCardsId = [] as Card[];
