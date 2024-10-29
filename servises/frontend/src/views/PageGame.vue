@@ -1,7 +1,8 @@
 <template>
   <section class="conteiner">
     <div
-      v-for="card in cards"
+      v-for="card in memoryCards"
+      :key="card.id"
       @click="memoryGame.pickCard(card)"
       class="memory-card"
     >
@@ -10,63 +11,22 @@
   </section>
 </template>
 <script setup lang="ts">
-interface Card {
-  id: number;
-  text: string;
-}
+import { MemoryGame } from "@/service/useMemoryGame";
+import type { TMemoryGame } from "@/types/memoryGame";
+import { ref } from "vue";
 
-interface Player {
-  name: string;
-  points: number;
-  selectedCards: Card[];
-}
-
-type CardsConfig = (Card | Card[])[];
-
-const cards = [
-  { id: 1, key: 1, text: "Огурец" },
-  { id: 2, key: 1, text: "Огурец" },
-  { id: 3, key: 2, text: "Помидор" },
-  { id: 4, key: 2, text: "Помидор" },
-] satisfies Card[];
-
-const cardsConfig = [
+const cardsConfig: TMemoryGame.CardsConfig = [
+  { pair: { text: "Огурец" } },
+  { pair: { text: "Помидор" } },
+  { pair: { text: "Сыр" } },
+  { pair: { text: "Вафля" } },
   {
-    text: "Огурец",
-    imgUrl: "",
+    customPair: [{ text: "Кошка" }, { text: "Cat" }],
   },
-  [
-    { text: "Кошка", imgUrl: "" },
-    { text: "Cat", imgUrl: "" },
-  ],
-] as CardsConfig;
+];
 
-class MemoryGame {
-  selectedCardsId = [] as Card[];
-  currentPlayerId = 0;
-  players = [];
-
-  constructor(players) {}
-
-  pickCard(card: Card) {
-    if (this.selectedCardsId[0]?.id === card.id) return;
-
-    this.selectedCardsId.push(card);
-
-    if (this.selectedCardsId.length != 2) return;
-    const [a, b] = this.selectedCardsId;
-
-    if (a.key == b.key) {
-      console.log("Пара");
-    } else {
-      console.log("не пара");
-    }
-
-    this.selectedCardsId.length = 0;
-  }
-}
-
-const memoryGame = new MemoryGame([]);
+const memoryGame = new MemoryGame(cardsConfig);
+const memoryCards = ref(memoryGame.getCards());
 </script>
 <style scoped>
 .memory-card {
@@ -77,7 +37,7 @@ const memoryGame = new MemoryGame([]);
 }
 
 .conteiner {
-  max-width: 300px;
+  max-width: 400px;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
