@@ -1,9 +1,13 @@
 export namespace TMemoryGame {
-  export interface Player {
+  export interface PlayersConfigItem {
     name: string;
-    points: number;
-    selectedCards: Card[];
   }
+
+  export interface Player extends PlayersConfigItem {
+    id: number;
+    points: number;
+  }
+
   export interface CardConfigItem {
     text?: string;
     imgUrl?: string;
@@ -12,10 +16,15 @@ export namespace TMemoryGame {
   export interface Card extends CardConfigItem {
     id: number;
     key: number;
+    isOpen: boolean;
+    сompleted: boolean;
   }
 
-  export type CardsConfig = (
-    | { pair: CardConfigItem }
-    | { customPair: CardConfigItem[] }
-  )[];
+  type CardsConfigPairedItem = CardConfigItem[];
+  type CardsConfigOptionsItem = [CardConfigItem, CardConfigItem][];
+
+  export interface CardsConfig {
+    paired?: CardsConfigPairedItem;
+    options?: CardsConfigOptionsItem;
+  }
 }
