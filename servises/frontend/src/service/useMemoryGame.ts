@@ -1,4 +1,5 @@
-import type { TMemoryGame } from "@/types/memoryGame";
+import type TMemoryGame from "TMemoryGame";
+import { randomizeArray } from "@/utils/randomizeArray";
 
 export class MemoryGame {
   currentPlayerId = 0;
@@ -7,6 +8,8 @@ export class MemoryGame {
 
   private readonly cards: TMemoryGame.Card[] | [] = [];
   selectedCards: TMemoryGame.Card[] = [];
+
+  counterСompletedPair = 0;
 
   constructor(
     cardsConfig: TMemoryGame.CardsConfig = {},
@@ -21,18 +24,14 @@ export class MemoryGame {
   }
 
   nextPlayer() {
-    if (this.currentPlayerId >= this.players.length - 1) {
-      this.currentPlayerId = 0;
-    } else {
-      this.currentPlayerId++;
-    }
+    this.currentPlayerId = ++this.currentPlayerId % this.players.length;
   }
 
-  getCards() {
-    return this.randomArray(this.cards);
+  getCards(): TMemoryGame.Card[] {
+    return randomizeArray(this.cards);
   }
 
-  getPlayers() {
+  getPlayers(): TMemoryGame.Player[] {
     return this.players;
   }
 
@@ -45,7 +44,7 @@ export class MemoryGame {
       id,
       key,
       isOpen: false,
-      сompleted: false,
+      completed: false,
       ...item,
     };
   }
@@ -59,9 +58,9 @@ export class MemoryGame {
   }
 
   parsePlayersConfig(playersConfig: TMemoryGame.PlayersConfigItem[]) {
-    return this.randomArray(playersConfig).map((player, index) => {
-      return this.createPlayers(index, player);
-    });
+    return randomizeArray(playersConfig).map((player, index) =>
+      this.createPlayers(index, player)
+    );
   }
 
   parseCardsConfig(cardsConfig: TMemoryGame.CardsConfig): TMemoryGame.Card[] {
@@ -95,6 +94,18 @@ export class MemoryGame {
     return cards;
   }
 
+  completePairMatch(status: boolean) {
+    if (this.selectedCards.length === 0) return;
+
+    const key = status ? "completed" : "isOpen";
+
+    this.selectedCards.forEach((card) => (card[key] = status));
+
+    this.selectedCards.length = 0;
+    this.nextPlayer();
+    this.gameOverCheck();
+  }
+
   pickCard(card: TMemoryGame.Card) {
     if (this.selectedCards.length >= 2) return;
 
@@ -103,48 +114,43 @@ export class MemoryGame {
       return;
     }
 
-    if (card.сompleted) return;
+    if (card.completed) return;
 
     if (this.selectedCards[0]?.id === card.id) return;
-
     card.isOpen = true;
+
     this.selectedCards.push(card);
-
     if (this.selectedCards.length != 2) return;
-    const [a, b] = this.selectedCards;
 
-    if (a.key == b.key) {
+    const [firstСard, secondСard] = this.selectedCards;
+
+    if (firstСard.key == secondСard.key) {
       console.log("Пара");
 
+      this.counterСompletedPair += 1;
       this.addPoint(this.currentPlayerId, 1);
-
-      setTimeout(() => {
-        this.selectedCards.forEach((card) => {
-          card.сompleted = true;
-        });
-
-        this.selectedCards.length = 0;
-        this.nextPlayer();
-      }, 1000);
+      setTimeout(() => this.completePairMatch(true), 1000);
     } else {
       console.log("не пара");
-      setTimeout(() => {
-        this.selectedCards.forEach((card) => {
-          card.isOpen = false;
-        });
-
-        this.selectedCards.length = 0;
-        this.nextPlayer();
-      }, 1000);
+      setTimeout(() => this.completePairMatch(false), 1000);
     }
   }
 
-  randomArray<T>(array: T[]): T[] {
-    const result = [...array];
-    for (let i = result.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [result[i], result[j]] = [result[j], result[i]];
+  gameOverCheck() {
+    const status = this.counterСompletedPair >= this.cards.length / 2;
+
+    if (status) {
+      console.log("Игра окончена");
+
+      this.cards.forEach((card) => {
+        card.completed = false;
+        card.isOpen = false;
+      });
+
+      this.players.forEach((player) => (player.points = 0));
+      this.counterСompletedPair = 0;
     }
-    return result;
+
+    return status;
   }
 }

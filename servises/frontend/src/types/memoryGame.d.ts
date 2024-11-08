@@ -1,29 +1,29 @@
-export namespace TMemoryGame {
-  export interface PlayersConfigItem {
+declare module "TMemoryGame" {
+  interface PlayersConfigItem {
     name: string;
   }
 
-  export interface Player extends PlayersConfigItem {
+  interface Player extends PlayersConfigItem {
     id: number;
     points: number;
   }
 
-  export interface CardConfigItem {
+  interface CardConfigItem {
     text?: string;
     imgUrl?: string;
   }
 
-  export interface Card extends CardConfigItem {
+  interface Card extends CardConfigItem {
     id: number;
     key: number;
     isOpen: boolean;
-    сompleted: boolean;
+    completed: boolean;
   }
 
   type CardsConfigPairedItem = CardConfigItem[];
   type CardsConfigOptionsItem = [CardConfigItem, CardConfigItem][];
 
-  export interface CardsConfig {
+  interface CardsConfig {
     paired?: CardsConfigPairedItem;
     options?: CardsConfigOptionsItem;
   }
