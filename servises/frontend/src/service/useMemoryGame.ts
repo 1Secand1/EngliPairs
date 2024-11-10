@@ -97,13 +97,19 @@ export class MemoryGame {
   completePairMatch(status: boolean) {
     if (this.selectedCards.length === 0) return;
 
-    const key = status ? "completed" : "isOpen";
-
-    this.selectedCards.forEach((card) => (card[key] = status));
+    this.selectedCards.forEach((card) => {
+      if (status) card.completed = true;
+      card.isOpen = false;
+    });
 
     this.selectedCards.length = 0;
     this.nextPlayer();
-    this.gameOverCheck();
+
+    const gameOverStatus = this.counterСompletedPair >= this.cards.length / 2;
+
+    if (gameOverStatus) {
+      this.gameOver();
+    }
   }
 
   pickCard(card: TMemoryGame.Card) {
@@ -136,21 +142,19 @@ export class MemoryGame {
     }
   }
 
-  gameOverCheck() {
-    const status = this.counterСompletedPair >= this.cards.length / 2;
+  findWinner(): TMemoryGame.Player {
+    return this.players.reduce((winner, player) =>
+      player.points > winner.points ? player : winner
+    );
+  }
 
-    if (status) {
-      console.log("Игра окончена");
+  gameOver() {
+    const winner = this.findWinner();
+    console.log("Победил " + winner.name);
 
-      this.cards.forEach((card) => {
-        card.completed = false;
-        card.isOpen = false;
-      });
-
-      this.players.forEach((player) => (player.points = 0));
-      this.counterСompletedPair = 0;
-    }
-
-    return status;
+    this.cards.forEach((card) => (card.completed = false));
+    this.players.forEach((player) => (player.points = 0));
+    this.currentPlayerId = 0;
+    this.counterСompletedPair = 0;
   }
 }

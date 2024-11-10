@@ -19,7 +19,7 @@
         @click="memoryGame.pickCard(card)"
         class="memory-card"
       >
-        <template v-if="card.сompleted"> </template>
+        <template v-if="card.completed"> </template>
 
         <template v-else-if="card.isOpen">
           {{ card.text }}
@@ -32,7 +32,7 @@
 </template>
 <script setup lang="ts">
 import { MemoryGame } from "@/service/useMemoryGame";
-import type { TMemoryGame } from "@/types/memoryGame";
+import type TMemoryGame from "TMemoryGame";
 import { ref } from "vue";
 
 const cardsConfig: TMemoryGame.CardsConfig = {
@@ -48,6 +48,8 @@ const playersConfig: TMemoryGame.PlayersConfigItem[] = [
 const memoryGame = new MemoryGame(cardsConfig, playersConfig);
 const memoryCards = ref(memoryGame.getCards());
 const memoryPlayers = ref(memoryGame.getPlayers());
+
+// memoryGame.winning();
 </script>
 <style scoped>
 .wraper {
