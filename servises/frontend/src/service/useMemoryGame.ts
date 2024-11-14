@@ -11,6 +11,8 @@ export class MemoryGame {
 
   counterСompletedPair = 0;
 
+  gameOverCallback: (winner: TMemoryGame.Player) => void = () => {};
+
   constructor(
     cardsConfig: TMemoryGame.CardsConfig = {},
     playersConfig: TMemoryGame.PlayersConfigItem[] = []
@@ -108,7 +110,7 @@ export class MemoryGame {
     const gameOverStatus = this.counterСompletedPair >= this.cards.length / 2;
 
     if (gameOverStatus) {
-      this.gameOver();
+      this.gameOverCallback(this.findWinner());
     }
   }
 
@@ -131,8 +133,6 @@ export class MemoryGame {
     const [firstСard, secondСard] = this.selectedCards;
 
     if (firstСard.key == secondСard.key) {
-      console.log("Пара");
-
       this.counterСompletedPair += 1;
       this.addPoint(this.currentPlayerId, 1);
       setTimeout(() => this.completePairMatch(true), 1000);
@@ -148,10 +148,11 @@ export class MemoryGame {
     );
   }
 
-  gameOver() {
-    const winner = this.findWinner();
-    console.log("Победил " + winner.name);
+  gameOver(callback: (winner: TMemoryGame.Player) => void) {
+    this.gameOverCallback = callback;
+  }
 
+  restartGame() {
     this.cards.forEach((card) => (card.completed = false));
     this.players.forEach((player) => (player.points = 0));
     this.currentPlayerId = 0;

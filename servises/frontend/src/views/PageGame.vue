@@ -31,12 +31,13 @@
   </div>
 </template>
 <script setup lang="ts">
+import router from "@/router";
 import { MemoryGame } from "@/service/useMemoryGame";
 import type TMemoryGame from "TMemoryGame";
 import { ref } from "vue";
 
 const cardsConfig: TMemoryGame.CardsConfig = {
-  paired: [{ text: "Вафля" }, { text: "Пиченька" }],
+  paired: [{ text: "Вафля" }],
   options: [[{ text: "Кошка" }, { text: "Cat" }]],
 };
 
@@ -48,6 +49,16 @@ const playersConfig: TMemoryGame.PlayersConfigItem[] = [
 const memoryGame = new MemoryGame(cardsConfig, playersConfig);
 const memoryCards = ref(memoryGame.getCards());
 const memoryPlayers = ref(memoryGame.getPlayers());
+
+memoryGame.gameOver(({ name }) => {
+  const replayGame = confirm(`Победил ${name}, хотыте сыграть ещё ?`);
+
+  if (replayGame) {
+    memoryGame.restartGame();
+  } else {
+    router.push("/");
+  }
+});
 
 // memoryGame.winning();
 </script>
@@ -75,7 +86,7 @@ const memoryPlayers = ref(memoryGame.getPlayers());
 }
 
 .conteiner {
-  max-width: 400px;
+  max-width: 300px;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
