@@ -105,7 +105,10 @@ export class MemoryGame {
     });
 
     this.selectedCards.length = 0;
-    this.nextPlayer();
+
+    if (!status) {
+      this.nextPlayer();
+    }
 
     const gameOverStatus = this.counterСompletedPair >= this.cards.length / 2;
 
