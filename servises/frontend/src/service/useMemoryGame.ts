@@ -106,14 +106,12 @@ export class MemoryGame {
 
     this.selectedCards.length = 0;
 
-    if (!status) {
-      this.nextPlayer();
-    }
+    if (!status) this.nextPlayer();
 
     const gameOverStatus = this.counterСompletedPair >= this.cards.length / 2;
-
     if (gameOverStatus) {
       this.gameOverCallback(this.findWinner());
+      return;
     }
   }
 
@@ -140,7 +138,6 @@ export class MemoryGame {
       this.addPoint(this.currentPlayerId, 1);
       setTimeout(() => this.completePairMatch(true), 1000);
     } else {
-      console.log("не пара");
       setTimeout(() => this.completePairMatch(false), 1000);
     }
   }

@@ -19,13 +19,13 @@
         @click="memoryGame.pickCard(card)"
         class="memory-card"
       >
-        <template v-if="card.completed"> </template>
+        <template v-if="card.completed"></template>
 
         <template v-else-if="card.isOpen">
           {{ card.text }}
         </template>
 
-        <template v-else> 🩷 </template>
+        <template v-else>🩷</template>
       </div>
     </section>
   </div>
